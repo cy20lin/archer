@@ -1,0 +1,12 @@
+#+TITLE: Archer
+#+STARTUP: showall
+#+AUTHOR: ChienYu Lin
+#+EMAIL: cy20lin@google.com
+
+Develop environment setup helper.
+
+* Usage
+
+#+BEGIN_EXAMPLE
+  bash /path/to/archer/init.sh install msys2 app/base lang/c-c++ app/emacs
+#+END_EXAMPLE
