@@ -1,0 +1,8 @@
+LAYER_ALIAS=cc
+
+LAYER_DEPENDENCIES=(
+    app/cy20lin-spacemacs
+)
+
+LAYER_OPTIONAL_DEPENDENCIES=(
+)

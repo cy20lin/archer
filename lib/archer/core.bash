@@ -4,6 +4,7 @@ then
 fi
 ARCHER_CORE_BASH_REQUIRED=1
 ARCHER_CORE_PREFIX_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
+ARCHER_CORE_PWD="${PWD}"
 
 archer_core_require() {
     local __module="${1}"

@@ -8,5 +8,13 @@ Archer is a tool for setting-up developing environment.
 * Usage
 
 #+BEGIN_EXAMPLE
-  archer setup lang/c-c++ app/emacs
+  cd /to/path/that/contains/.archer.d
+  archer setup a/layer1 yet/another/layer2 /absolute/layer/representation/to/layer3
 #+END_EXAMPLE
+
+* Install
+  
+#+BEGIN_SRC sh
+  cd /path/to/archer
+  bash install.bash /path/to/install # eg. /usr/local
+#+END_SRC

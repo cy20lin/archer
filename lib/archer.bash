@@ -15,14 +15,21 @@ archer_help() {
 }
 
 archer_setup() {
-    archer_core_require archer/layer
     local layers=("${@}")
-    archer_layer_setup_layers_with_dependencies layers
+    archer_core_require archer/layer
+    if archer_layer_load_pwd_user_config
+    then
+        archer_layer_setup_layers_with_dependencies layers
+    fi
 }
 
 archer_raw_setup() {
     local layers=("${@}")
-    archer_layer_setup_layers layers
+    archer_core_require archer/layer
+    if archer_layer_load_pwd_user_config
+    then
+        archer_layer_setup_layers_with_dependencies layers
+    fi
 }
 
 archer() {
