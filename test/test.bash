@@ -8,7 +8,8 @@ fi
 dir="$( dirname "${file}" )"
 dir="$( cd "${dir}" && pwd )"
 pushd "${dir}" >/dev/null
-bash "${dir}/../bin/archer" setup app/cy20lin-spacemacs /app///emacs
+bash "${dir}/../bin/archer" help
+bash "${dir}/../bin/archer" force-install app/spacemacs /app///emacs
 result=$?
 popd >/dev/null
 exit $result

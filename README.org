@@ -3,14 +3,7 @@
 #+AUTHOR: ChienYu Lin
 #+EMAIL: cy20lin@google.com
 
-Archer is a tool for setting-up developing environment.
-
-* Usage
-
-#+BEGIN_EXAMPLE
-  cd /to/path/that/contains/.archer.d
-  archer setup a/layer1 yet/another/layer2 /absolute/layer/representation/to/layer3
-#+END_EXAMPLE
+Archer is a framework for managing developing environment setup scripts.
 
 * Install
   
@@ -18,3 +11,105 @@ Archer is a tool for setting-up developing environment.
   cd /path/to/archer
   bash install.bash /path/to/install # eg. /usr/local
 #+END_SRC
+
+* =.archer.d= directory structure
+  
+While invoking =archer=. It will load user settings =init.bash= that is contained 
+in subdirectory =.archer.d= whin the context of current working directory.
+
+#+BEGIN_SRC txt
+- .archer.d
+  - init.bash
+  - layer
+    - [maybe-subdir]
+      - <layer>
+        - layer.bash
+#+END_SRC
+
+A example =init.bash=
+
+#+BEGIN_SRC bash
+dotarcher_init() {
+    if is_msys2
+    then
+        ARCHER_LAYER_PREFIX=/msys2
+    elif is_ubuntu
+    then
+        ARCHER_LAYER_PREFIX=/ubuntu
+    elif is_archlinux
+    then
+        ARCHER_LAYER_PREFIX=/archlinux
+    else
+        ARCHER_LAYER_PREFIX=/default
+    fi
+}
+#+END_SRC
+
+* *Layer* concept
+
+A configuration layer contains necessery instructions, steps, and commands 
+to setup the environment and install configurations according to 
+its role. Layer can depend on other layers, when layer is installed using
+command =archer install <layer-reference-representation>...=, the depencencies
+will be resolved and sorted, dependent layers will be installed first.
+
+A directory is consider as layer, if following condition is met.
+
+- directory match regex / [a-zA-Z][a-zA-Z0-9\-+.]* /
+- directory has =layer.bash=, and with following functions defined
+  - =layer_metadata()= :: for loading variables, variables are listed below
+    - =LAYER_DEPENDENCIES= :: array variable for holding layer depencencies
+  - =layer_install()= :: for installing configration layer
+  - =layer_is_install()= :: for checking layer is installed or not
+  - =layer_help()= :: for help message of this layer 
+
+A example =app/spacemacs/layer.bash=
+
+#+BEGIN_SRC bash
+layer_help() {
+    echo "app/spacemacs"
+}
+
+layer_metadata() {
+    LAYER_DEPENDENCIES=(
+      app/git
+    )
+}
+
+layer_is_installed() {
+    test -f '~/.emacs.d/spacemacs.mk'
+}
+
+layer_install() {
+    pushd ~
+    git clone https://github.com/syl20bnr/spacemacs .emacs.d
+    popd
+}
+#+END_SRC
+
+* Layer reference representation
+  
+Layer reference is used to specifiy which layer should be processed by =archer=.
+There are two kinds of representations.
+
+** Absolute reference representation
+
+Absolute reference representation is string, and with first character being slash =/=,
+e.g. =/absolute/ref/to/layer=, is referenceing to the directory =.archer.d/layer/absolute/ref/to/layer=
+relative to current working directory.
+
+** Relative reference representation
+
+Relative reference representation is string, and with first character not begin with slash =/=,
+e.g. =relative/ref/to/layer=, all relative-reference-representation will be transformed into 
+absolute representation in the end, by prepend with the prefix =ARCHER_LAYER_PREFIX=, this variable 
+can be customized in file =.archer.d/init.bash= in function =dotarcher_init()=, default value is =/=.
+
+* Example Usage
+
+Given current working directory has valid =./.archer.d= directory structure. 
+
+#+BEGIN_SRC bash
+archer install app/spacemacs /ubuntu/app/git
+#+END_SRC
+
