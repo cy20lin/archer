@@ -7,7 +7,7 @@ ARCHER_MAP_BASH_REQUIRED=1
 # archer_core_require archer/array
 
 archer_map_static_hash_default() {
-    archer_map_static_hash_xxd "${@}"
+    archer_map_static_hash_underscore "${@}"
     # local __value="${1}"
     # local __var="${2}"
     # echo value=$__value
@@ -28,15 +28,20 @@ archer_map_static_hash_default() {
     # eval "${__var}"='"${__new_value}"'
 }
 
+
 archer_map_static_hash_xxd() {
     # echo eval "${2}"='"$( cat "${1}" | xxd -pu )"'
     # remove 0a in the end
+    # FIXME: xxd may fail
+    # sometimes xxd would fail on msys2
     eval "${2}"='"$( xxd -pu <<< "${1}" )" ; '"${2}"='${'"${2}"'::-2}'
 }
 
 archer_map_static_hash_underscore() {
-    eval "${2}"="${1//[^A-Za-z_]/_}"
-    # eval echo "${2}"='$( printf "%s" "${1}" | sed 's@[^A-Za-z0-9_]@_@g' )'
+    # following command worked on msys2 bash 4.3.046-1, failed on msys2 bash 4.4.019-2
+    # eval "${2}"='"$( printf "%s" "${1}" | sed "s@[^0-9A-Za-z_]@_@g" )"'
+    # this works on both versions
+    eval "${2}"='"${1//[^A-Za-z_]/_}"'
 }
 
 archer_map_init() {

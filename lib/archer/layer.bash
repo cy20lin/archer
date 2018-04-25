@@ -68,7 +68,19 @@ archer_layer_to_absolute() {
     else
         eval "${2}"='"${1}"'
     fi
-    eval "${2}"='"$( sed "s@//*@/@g" <<< "${'"${2}"'}" )"'
+    # TODO enhance normalization process
+    # to resolve relative path with double dot
+    # we has to remove it parent dir exclude it name is '.' or '..'
+    # but sed doesn't has negative lookahead,
+    # so we select the pattern manually
+    # for one char string: [^/.]
+    # for two char string: [^/.]\. or \.[^/.]
+    # for multiple char string: [^/.][^/.][^/]*
+    eval "${2}"='"$( sed " :remove-extra-slash s@//*@/@g ;
+    :resolve-double-dot s@/\([^/.]\|\.[^/.]\|[^/.]\.\|[^/.][^/.][^/]*\)/\.\.\(/\|$\)@/@ ; t resolve-double-dot ;
+    :resolve-single-dot s@/.\(/\|$\)@\1@g ;
+    " <<< "${'"${2}"'}" )"'
+    # eval '${2}"=$( sed "s@/[^/]*/\.\.\(/\|$\)@\1@g" <<< "${'"${2}"'}" )"'
 }
 
 archer_layer_dependencies() {
