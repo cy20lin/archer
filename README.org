@@ -62,6 +62,7 @@ A directory is consider as layer, if following condition is met.
   - =layer_install()= :: for installing configration layer
   - =layer_is_install()= :: for checking layer is installed or not
   - =layer_help()= :: for help message of this layer 
+  - =layer_run()= :: run this layer
 
 A example =app/spacemacs/layer.bash=
 
@@ -84,6 +85,10 @@ layer_install() {
     pushd ~
     git clone https://github.com/syl20bnr/spacemacs .emacs.d
     popd
+}
+
+layer_run() {
+    echo "hello"
 }
 #+END_SRC
 

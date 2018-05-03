@@ -20,47 +20,6 @@ archer_layer_is_absolute() {
     return 1
 }
 
-archer_layer__load_user_config() {
-    if test ! -z "${1}" -a -f "${1}/.archer.d/init.bash"
-    then
-        archer_core_info "loading user config file"
-        if source "${1}/.archer.d/init.bash"
-        then
-            archer_core_info "user config file loaded"
-        else
-            archer_core_error "user config file loading failure"
-            return 1
-        fi
-    else
-        archer_core_error "user config file .archer.d/init.bash not found"
-        return 1
-    fi
-    shift
-    if test "$( type -t dotarcher_init )" = "function"
-    then
-        archer_core_info "dotarcher_init loading"
-        if dotarcher_init "${@}"
-        then
-            archer_core_info "dotarcher_init loaded"
-        else
-            archer_core_error "dotarcher_init loaded failure"
-        fi
-    else
-        archer_core_error "function dotarcher_init not found in user config file .archer.d/init.bash"
-        return 1
-    fi
-}
-
-archer_layer_load_pwd_user_config() {
-    if archer_layer__load_user_config "${ARCHER_CORE_PWD}"
-    then
-        archer_core_info "ARCHER_LAYER_PREFIX=${ARCHER_LAYER_PREFIX}"
-        return 0
-    else
-        return 1
-    fi
-}
-
 archer_layer_to_absolute() {
     if ! archer_layer_is_absolute "${1}"
     then
@@ -95,6 +54,7 @@ archer_layer_dependencies() {
             eval "${2}"='("${LAYER_DEPENDENCIES[@]}")'
             return 0
         else
+            echo eval "${2}"='()'
             eval "${2}"='()'
         fi
     fi
@@ -157,6 +117,7 @@ archer_layer_unload() {
     unset -f layer_help
     unset -f layer_metadata
     unset -f layer_install
+    unset -f layer_run
     unset -f layer_is_installed
 }
 
@@ -180,6 +141,20 @@ archer_layer_install() {
                 archer_layer_unload "${1}"
                 return 1
             fi
+        fi
+    else
+        archer_core_warning "cannot find layer: \"${__layer}\""
+        return 1
+    fi
+}
+
+archer_layer_run() {
+    if archer_layer_load "${1}"
+    then
+        if test "$( type -t layer_run )" = "function"
+        then
+            shift
+            layer_run "${@}"
         fi
     else
         archer_core_warning "cannot find layer: \"${__layer}\""

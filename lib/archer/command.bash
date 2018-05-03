@@ -1,3 +1,8 @@
+if test ! -z "${ARCHER_COMMAND_BASH_REQUIRED}"
+then
+    return 1
+fi
+ARCHER_COMMAND_BASH_REQUIRED=1
 
 archer_command() {
     local ARCHER_COMMAND="${1}"

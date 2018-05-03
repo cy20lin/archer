@@ -16,3 +16,6 @@ layer_install() {
     true
 }
 
+layer_run() {
+    echo "hello"
+}
